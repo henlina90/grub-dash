@@ -8,8 +8,8 @@ const nextId = require("../utils/nextId");
 
 // TODO: Implement the /orders handlers needed to make the tests pass
 
-// Validate a new order
-function validateNewOrder(req, res, next) {
+// Validate order properties
+function orderCheck(req, res, next) {
   const { data: { deliverTo, mobileNumber, dishes } = {} } = req.body;
 
   if (!deliverTo || deliverTo.length === 0) {
@@ -49,11 +49,10 @@ function validateNewOrder(req, res, next) {
   next();
 }
 
-// Validate an order update
-function validateOrderUpdate(req, res, next) {
+// Validate order update
+function checkOrderUpdate(req, res, next) {
   const { data: { id, deliverTo, mobileNumber, dishes, status } = {} } =
     req.body;
-
   const orderStatus = ["pending", "preparing", "out-for-delivery", "delivered"];
 
   if (!status || status.length === 0) {
@@ -83,37 +82,40 @@ function validateOrderUpdate(req, res, next) {
   next();
 }
 
-// An order with a status of pending cannot be deleted
-function validateOrderStatus(req, res, next) {
+// Validate order status when deleting
+function isOrderPending(req, res, next) {
   if (res.locals.foundOrder.status !== "pending") {
     return next({
       status: 400,
       message: "An order cannot be deleted unless it is pending",
     });
   }
+
   next();
 }
 
-// Check if order id exists
+// Check if id matches orderId: GET /orders/:orderId
 function orderExists(req, res, next) {
   const { orderId } = req.params;
   const foundOrder = orders.find((order) => order.id === orderId);
+
   if (foundOrder) {
     res.locals.foundOrder = foundOrder;
     return next();
   }
+
   next({
     status: 404,
     message: `Order with ID ${orderId} does not exist`,
   });
 }
 
-// List all existing orders
+// List all existing order data: GET /orders
 function list(req, res) {
   res.json({ data: orders });
 }
 
-// Create a new order
+// Create a new order: POST /orders
 function create(req, res) {
   const { data: { deliverTo, mobileNumber, dishes } = {} } = req.body;
   const newOrder = {
@@ -122,15 +124,17 @@ function create(req, res) {
     mobileNumber,
     dishes,
   };
+
   orders.push(newOrder);
   res.status(201).json({ data: newOrder });
 }
 
+// Retrieve an existing order: GET /orders/:orderId
 function read(req, res) {
   res.json({ data: res.locals.foundOrder });
 }
 
-// Update an existing order if valid
+// Update an existing order if valid: PUT /orders/:orderId
 function update(req, res) {
   const { data: { deliverTo, mobileNumber, dishes, status } = {} } = req.body;
   const foundOrder = res.locals.foundOrder;
@@ -145,18 +149,19 @@ function update(req, res) {
   res.json({ data: foundOrder });
 }
 
-// Delete order if id matches & order status is not pending
+// DELETE order if id matches & status not pending: /orders/:orderId
 function destroy(req, res) {
   const { orderId } = req.params;
   const foundIndex = orders.findIndex((order) => order.id === orderId);
+
   orders.splice(foundIndex, 1);
   res.sendStatus(204);
 }
 
 module.exports = {
   list,
-  create: [validateNewOrder, create],
+  create: [orderCheck, create],
   read: [orderExists, read],
-  update: [orderExists, validateNewOrder, validateOrderUpdate, update],
-  delete: [orderExists, validateOrderStatus, destroy],
+  update: [orderExists, orderCheck, checkOrderUpdate, update],
+  delete: [orderExists, isOrderPending, destroy],
 };

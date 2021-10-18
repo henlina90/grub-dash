@@ -8,8 +8,8 @@ const nextId = require("../utils/nextId");
 
 // TODO: Implement the /dishes handlers needed to make the tests pass
 
-// Validate a new dish
-function validateNewDish(req, res, next) {
+// Validate dish properties
+function dishCheck(req, res, next) {
   const { data: { name, description, price, image_url } = {} } = req.body;
   if (!name || name.length === 0) {
     return next({
@@ -40,8 +40,8 @@ function validateNewDish(req, res, next) {
   next();
 }
 
-// Validate a dish update
-function validateDishUpdate(req, res, next) {
+// Validate dish update
+function checkDishUpdate(req, res, next) {
   const { data: { id, name, description, price, image_url } = {} } = req.body;
 
   if (price <= 0 || !Number.isInteger(price)) {
@@ -59,7 +59,7 @@ function validateDishUpdate(req, res, next) {
   next();
 }
 
-// Check if dish id exists
+// Check if id matches dishId: GET /dishes/:dishId
 function dishExists(req, res, next) {
   const { dishId } = req.params;
   const foundDish = dishes.find((dish) => dish.id === dishId);
@@ -75,12 +75,12 @@ function dishExists(req, res, next) {
   return next();
 }
 
-// List all existing dishes
+// List all existing dish data: GET /dishes
 function list(req, res) {
   res.json({ data: dishes });
 }
 
-// Create a new dish
+// Create a new dish: POST /dishes
 function create(req, res) {
   const { data: { name, description, price, image_url } = {} } = req.body;
 
@@ -96,12 +96,12 @@ function create(req, res) {
   res.status(201).json({ data: newDish });
 }
 
-// Retrieve an existing dish
+// Retrieve an existing dish: GET /dishes/dishId
 function read(req, res) {
   res.json({ data: res.locals.foundDish });
 }
 
-// Update an existing dish if valid
+// Update an existing dish if valid: PUT /dishes/:dishId
 function update(req, res) {
   const { data: { name, description, price, image_url } = {} } = req.body;
   const foundDish = res.locals.foundDish;
@@ -118,7 +118,8 @@ function update(req, res) {
 
 module.exports = {
   list,
-  create: [validateNewDish, create],
+  create: [dishCheck, create],
   read: [dishExists, read],
-  update: [dishExists, validateNewDish, validateDishUpdate, update],
+  update: [dishExists, dishCheck, checkDishUpdate, update],
+  dishExists,
 };
