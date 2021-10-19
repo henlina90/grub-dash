@@ -1,34 +1,16 @@
-# Project Description: GrubDash
-### This project includes back-end API and specific routes for the demo of the application and design by front-end.
+# GrubDash
+- A server designed to handle HTTP requests for individual restaurant dishes and delivery orders. 
+- A back-end application focused on building an API that follows RESTful design principles and utilizes route parameters and custom middleware.
 
-Run `npm install` to install the project
+### Installation 
+1. Fork/Clone this repository
+2. Run `npm install`
+3. Run `npm start` to host the server locally
 
-### Project Features
-- Allows user to Create, Read, and Update dishes through the dishes router.
-- Allows user to Create, Read, Update, and Delete orders through the orders router.
+If `API_BASE_URL` is not set, a default value of `http://localhost:5000` is used. <br>
 
-### Learning Objectives
-This project will test your ability to build APIs with complex validation. 
+Optionally, you may run the [front-end application](https://github.com/Thinkful-Ed/starter-grub-dash-front-end) on the same server for a more visual representation of this project. 
 
-Before taking on this project, you should be comfortable with the learning objectives listed below:
+### Technology
+Built with Express, JavaScript, Node.js
 
-- Running tests from the command line
-- Using common middleware packages
-- Receiving requests through routes
-- Accessing relevant information through route parameters
-- Building an API following RESTful design principles
-- Writing custom middleware functions
-
-### Tasks Completed
-- Add handlers and middleware functions to create, read, update, and list dishes. Dishes cannot be deleted.
-- Add two routes: /dishes, and /dishes/:dishId and attach the handlers (create, read, update, and list)
-- Add handlers and middleware functions to create, read, update, delete, and list orders.
-- Add two routes: /orders, and /orders/:orderId and attach the handlers (create, read, update, delete, and list) 
-- Anytime you need to assign a new id to an order or dish, use the nextId helper function
-
-### Grading Rubric
-- All tests are passing in Qualified.
-- All middleware and handler functions have a single responsibility and are named functions.
-- All data passed between middleware and handler functions uses response.locals.
-- All chained method calls on a route(...) end with all(methodNotAllowed).
-- All update handlers guarantee that the id property of the stored data cannot be overwritten.
