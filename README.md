@@ -1,4 +1,4 @@
-# :file_folder: grub_dash_app: Food delivery app called GrubDash
+# Project Description: GrubDash
 ### This project includes back-end API and specific routes for the demo of the application and design by front-end.
 
 Run `npm install` to install the project
